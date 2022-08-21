@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class DetailsViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -46,15 +47,45 @@ class DetailsViewController: UIViewController, UIImagePickerControllerDelegate, 
         present(picker, animated: true, completion: nil)
     }
     
-    //DidFinishPicking?
+    //DidFinishPicking? the photo
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        imageView.image = info[.originalImage] as! UIImage
+        imageView.image = info[.originalImage] as? UIImage
         self.dismiss(animated: true, completion: nil)
     }
     
     //Save button Clicked Function
     @IBAction func saveButtonClicked(_ sender: Any) {
-        print("Test")
+        
+        //Acessando a função Save Context, dentro do AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        //Acessando nossa entidade "Paintings"
+        let newPainting = NSEntityDescription.insertNewObject(forEntityName: "Paintings", into: context)
+        
+        //Preenchendo os atributos da entidade "Paintings"
+        newPainting.setValue(nameText.text!, forKey: "name")
+        newPainting.setValue(artistText.text, forKey: "artist")
+        
+        //Convertendo o ano de String para Int
+        if let year = Int(yearText.text!) {
+            newPainting.setValue(year, forKey: "year")
+        }
+        
+        //Criando um ID
+        newPainting.setValue(UUID(), forKey: "id")
+        
+        
+        let data = imageView.image?.jpegData(compressionQuality: 0.5)
+        
+        newPainting.setValue(data, forKey: "image")
+        
+        do {
+            try context.save()
+            print("Sucess")
+        } catch {
+            print("Error")
+        }
     }
     
 }
