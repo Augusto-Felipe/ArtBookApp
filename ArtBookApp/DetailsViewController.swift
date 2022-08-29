@@ -86,6 +86,9 @@ class DetailsViewController: UIViewController, UIImagePickerControllerDelegate, 
         } catch {
             print("Error")
         }
+        
+        
+        self.navigationController?.popViewController(animated: true)
     }
     
 }

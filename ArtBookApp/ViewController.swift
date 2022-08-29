@@ -21,18 +21,26 @@ class ViewController: UIViewController , UITableViewDelegate, UITableViewDataSou
         tableView.delegate = self
         tableView.dataSource = self
         
+        //Botão Add
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.add, target: self, action: #selector(addButtonClicked))
         
         getData()
     }
     
-    func getData() {
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(getData), name: NSNotification.Name(rawValue: "newData"), object: nil)
+    }
+    
+    @objc func getData() {
+        
+        nameArray.removeAll(keepingCapacity: false)
+        idArray.removeAll(keepingCapacity: false)
         
         //Acessando as funcoes do AppDelegate
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         
-        //Acessando a Entidade
+        //Acessando a Entidade Paintings
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Paintings")
         
         fetchRequest.returnsObjectsAsFaults = false
